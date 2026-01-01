@@ -1,0 +1,26 @@
+name: CICD with Argocd
+on: 
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    env:
+      REGISTRY: docker.io
+      IMAGE_NAME: swathi419/webapp
+      
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+  
+      - name: Build with maven
+        run: mvn clean package
+
+      - name: setup docker buildx
+        uses: docker/setup-buildx
+
+      - name: Buildx Docker
+        uses: docker/setup-buildx-
