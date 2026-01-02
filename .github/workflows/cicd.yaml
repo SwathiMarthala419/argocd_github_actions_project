@@ -20,7 +20,54 @@ jobs:
         run: mvn clean package
 
       - name: setup docker buildx
-        uses: docker/setup-buildx
+        uses: docker/setup-buildx-action@v3
 
-      - name: Buildx Docker
-        uses: docker/setup-buildx-
+      - name: Docker login
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+        
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ${{ env.IMAGE_NAME }}:${{ github.run_number }}
+
+      - name: Update Deployment Manifest 
+        run: |
+               echo "Updating image tag in deployment.yml..."
+               sed -i "s|${IMAGE_NAME}:.*|${IMAGE_NAME}:${GITHUB.RUN_NUMBER}|g" deploymentfiles/deployment.yml
+               echo "Updated deployment.yml content:"
+               cat deploymentfiles/deployment.yml
+               
+      - name: Commit and push Deployment File
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "Update Deployment image to version {{ GITHUB.RUN_NUMBER }}"
+          branch: main
+          
+  deploy:
+
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+
+      - name: Checkout Repository
+        uses: action/checkout@v4
+
+      - name: Install Argocd cli
+        run: |
+              curl -sSL -o argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+              chmod +x argocd
+              sudo mv argocd /usr/local/bin
+
+      - name: Trigger ArgoCd Sync
+        run: |
+              argocd login ${{ secrets.ARGOCD_SERVER }} --username admin --password ${{ secrets.ARGOCD_PASSWORD }} --insecure
+              argocd app sync prodapp
+        
+    
+          
+          
