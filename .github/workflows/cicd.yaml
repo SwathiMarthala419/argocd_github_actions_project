@@ -15,11 +15,7 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
-
-      - name: Pull latest changes
-        run: |
-              git pull origin main --rebase
-
+        
       - name: Build with maven
         run: mvn clean package
 
@@ -51,7 +47,7 @@ jobs:
       - name: Commit and push Deployment File
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "Update Deployment image to version {{ GITHUB.RUN_NUMBER }}"
+          commit_message: "Update Deployment image to version {{ github.run_number }}"
           branch: main
           
   deploy:
