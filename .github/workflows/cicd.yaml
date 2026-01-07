@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 jobs:
   build:
-    runs-on: self-hosted
+    runs-on: [self-hosted, tomcat]
     
     env:
       REGISTRY: docker.io
@@ -56,7 +56,7 @@ jobs:
           
   deploy:
 
-    runs-on: self-hosted
+    runs-on: [self-hosted, tomcat]
     needs: build
     steps:
 
