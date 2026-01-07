@@ -18,7 +18,8 @@ jobs:
 
       - name: Install Maven
         run: |
-              sudo apt install maven -y
+              sudo apt-get update
+              sudo apt-get install -y maven
         
       - name: Build with maven
         run: mvn clean package
