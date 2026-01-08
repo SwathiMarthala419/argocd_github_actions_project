@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 jobs:
   build:
-    runs-on: [self-hosted, tomcat]
+    runs-on: ubuntu-latest
     
     env:
       REGISTRY: docker.io
@@ -16,9 +16,9 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Install Maven
-        run: |
-              sudo yum install -y maven
+#      - name: Install Maven
+ #       run: |
+  #            sudo yum install -y maven
         
       - name: Build with maven
         run: mvn clean package
@@ -56,7 +56,7 @@ jobs:
           
   deploy:
 
-    runs-on: [self-hosted, tomcat]
+    runs-on: ubuntu-latest
     needs: build
     steps:
 
